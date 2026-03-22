@@ -1,15 +1,33 @@
-//! HTTP 工具
-
+use super::Tool;
 use anyhow::Result;
+use serde_json::Value as JsonValue;
 
-/// HTTP 请求
-pub struct HttpRequest {
-    pub url: String,
-    pub method: String,
+/// HTTP 工具
+pub struct HttpTool;
+
+impl HttpTool {
+    pub fn new() -> Self {
+        Self
+    }
 }
 
-/// 执行 HTTP 请求
-pub fn request(req: HttpRequest) -> Result<String> {
-    tracing::debug!("HTTP request: {} {}", req.method, req.url);
-    Ok("{}".to_string())
+impl Tool for HttpTool {
+    fn name(&self) -> &str {
+        "http"
+    }
+
+    fn description(&self) -> &str {
+        "Make HTTP requests"
+    }
+
+    fn execute(&self, _args: &JsonValue) -> Result<JsonValue> {
+        // MVP 阶段：返回固定响应
+        Ok(JsonValue::String("HTTP response (MVP stub).".to_string()))
+    }
+}
+
+impl Default for HttpTool {
+    fn default() -> Self {
+        Self::new()
+    }
 }
