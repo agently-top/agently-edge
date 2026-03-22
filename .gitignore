@@ -1,0 +1,28 @@
+# Rust
+/target/
+**/target/
+*.rlib
+*.so
+*.dylib
+*.dll
+*.pdb
+Cargo.lock
+
+# Worktrees
+.worktrees/
+
+# Sphinx docs
+docs/build/
+__pycache__/
+*.py[cod]
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+*.o
+*.a
