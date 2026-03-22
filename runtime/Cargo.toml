@@ -1,0 +1,32 @@
+[package]
+name = "agently-edge-runtime"
+version = "0.1.0"
+edition = "2021"
+description = "Edge AI Agent Runtime for Commercial Display Devices"
+license = "Apache-2.0"
+
+[lib]
+name = "agently_edge"
+path = "src/lib.rs"
+
+[dependencies]
+# 异步运行时
+tokio = { version = "1.35", features = ["full"] }
+# 序列化
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+# 错误处理
+anyhow = "1.0"
+thiserror = "1.0"
+# 日志
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+# 配置
+config = "0.14"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[features]
+default = []
