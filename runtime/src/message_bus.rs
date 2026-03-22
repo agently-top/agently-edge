@@ -16,7 +16,7 @@ impl MessageBus {
     pub fn new() -> Self {
         Self
     }
-    
+
     /// 发布消息
     pub fn publish(&self, message: Message) -> Result<()> {
         tracing::debug!("Publish message to topic: {}", message.topic);

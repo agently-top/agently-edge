@@ -1,12 +1,13 @@
 //! agently Edge Runtime
-//! 
+//!
 //! Edge AI Agent 运行时，支持 Linux、Android、鸿蒙 Next 三平台。
 
-pub mod runtime;
 pub mod agent;
-pub mod message_bus;
-pub mod tools;
+pub mod config;
 pub mod ffi;
+pub mod message_bus;
+pub mod runtime;
+pub mod tools;
 
 /// 库版本
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

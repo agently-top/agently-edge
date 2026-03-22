@@ -23,7 +23,7 @@ pub extern "C" fn agently_runtime_create(
         tracing::error!("Null pointer passed to agently_runtime_create");
         return std::ptr::null_mut();
     }
-    
+
     let config = RuntimeConfig {
         agent_id: unsafe { CStr::from_ptr(agent_id).to_string_lossy().into_owned() },
         model_path: unsafe { CStr::from_ptr(model_path).to_string_lossy().into_owned() },
@@ -81,7 +81,7 @@ pub extern "C" fn agently_runtime_start(runtime: *mut Runtime) -> i32 {
         }
         return -1;
     }
-    
+
     let runtime = unsafe { &mut *runtime };
     match runtime.start() {
         Ok(_) => 0,

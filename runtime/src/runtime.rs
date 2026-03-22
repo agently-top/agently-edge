@@ -19,7 +19,7 @@ impl Runtime {
     pub fn new(config: RuntimeConfig) -> Self {
         Self { config }
     }
-    
+
     /// 启动运行时
     pub fn start(&self) -> Result<()> {
         tracing::info!("Starting runtime with config: {:?}", self.config);

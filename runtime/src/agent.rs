@@ -16,7 +16,7 @@ impl Agent {
     pub fn new(config: AgentConfig) -> Self {
         Self { config }
     }
-    
+
     /// 获取 Agent ID
     pub fn id(&self) -> &str {
         &self.config.id

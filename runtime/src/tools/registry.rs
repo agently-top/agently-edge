@@ -10,7 +10,7 @@ impl ToolRegistry {
     pub fn new() -> Self {
         Self {}
     }
-    
+
     /// 注册工具
     pub fn register(&mut self, _name: &str, _tool: Box<dyn Fn() -> Result<()>>) -> Result<()> {
         Ok(())
