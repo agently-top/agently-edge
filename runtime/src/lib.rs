@@ -5,6 +5,7 @@
 pub mod agent;
 pub mod config;
 pub mod ffi;
+pub mod llm;
 pub mod message_bus;
 pub mod runtime;
 pub mod tools;
