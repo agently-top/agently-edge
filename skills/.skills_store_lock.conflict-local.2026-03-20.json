@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "opencode": {
+      "name": "OpenCode AI",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=opencode",
+      "source": "skillhub",
+      "version": "1.1.0"
+    },
+    "btpanel": {
+      "name": "btpanel",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=btpanel",
+      "source": "skillhub",
+      "version": "1.0.1"
+    },
+    "clawddocs": {
+      "name": "Clawdbot Documentation Expert",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=clawddocs",
+      "source": "skillhub",
+      "version": "1.2.2"
+    },
+    "ai-news-pusher": {
+      "name": "AI News Pusher",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=ai-news-pusher",
+      "source": "skillhub",
+      "version": "2.2.2"
+    },
+    "siyuan-skill": {
+      "name": "siyuan-skill",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=siyuan-skill",
+      "source": "skillhub",
+      "version": "1.6.3"
+    },
+    "siyuan-task-skill": {
+      "name": "siyuan-task-skill",
+      "zip_url": "https://lightmake.site/api/v1/download?slug=siyuan-task-skill",
+      "source": "skillhub",
+      "version": "1.0.0"
+    }
+  }
+}
