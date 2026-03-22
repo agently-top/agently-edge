@@ -1,6 +1,7 @@
 //! LLM 推理引擎
 
 use anyhow::Result;
+use serde_json::Value as JsonValue;
 
 /// 消息角色
 #[derive(Debug, Clone, PartialEq)]
@@ -15,6 +16,21 @@ pub enum Role {
 pub struct Message {
     pub role: Role,
     pub content: String,
+}
+
+/// Tool 调用
+#[derive(Debug, Clone)]
+pub struct ToolCall {
+    pub name: String,
+    pub arguments: JsonValue,
+}
+
+/// Tool 定义
+#[derive(Debug, Clone)]
+pub struct Tool {
+    pub name: String,
+    pub description: String,
+    pub parameters: JsonValue,
 }
 
 /// Prompt 管理器
@@ -156,5 +172,32 @@ impl LLMEngine {
 
         // TODO: 集成 llama.cpp
         Ok("Response from llama.cpp".to_string())
+    }
+
+    /// 带工具的对话
+    pub fn chat_with_tools(
+        &mut self,
+        user_input: &str,
+        tools: &[Tool],
+    ) -> Result<(String, Option<ToolCall>)> {
+        if self.is_mock {
+            // MVP 阶段：返回 mock 响应
+            // 简单模拟：如果用户输入包含 "what" 或 "how"，返回需要调用工具的响应
+            let lower_input = user_input.to_lowercase();
+            if lower_input.contains("what") || lower_input.contains("how") {
+                let tool_call = ToolCall {
+                    name: tools
+                        .first()
+                        .map(|t| t.name.clone())
+                        .unwrap_or_else(|| "unknown".to_string()),
+                    arguments: JsonValue::String(user_input.to_string()),
+                };
+                return Ok(("I'll help you with that.".to_string(), Some(tool_call)));
+            }
+            return Ok(("I understand.".to_string(), None));
+        }
+
+        // TODO: 集成 llama.cpp tool calling
+        Ok(("Response from llama.cpp".to_string(), None))
     }
 }
