@@ -13,9 +13,9 @@ fn get_last_error() -> &'static Mutex<Option<String>> {
 }
 
 /// 创建运行时 (C FFI)
-/// 
+///
 /// # Safety
-/// 
+///
 /// This function is unsafe because it dereferences raw pointers.
 /// The caller must ensure that `agent_id` and `model_path` are valid pointers
 /// to null-terminated C strings.
@@ -39,9 +39,9 @@ pub unsafe extern "C" fn agently_runtime_create(
 }
 
 /// 销毁运行时 (C FFI)
-/// 
+///
 /// # Safety
-/// 
+///
 /// This function is unsafe because it dereferences a raw pointer.
 /// The caller must ensure that `runtime` is a valid pointer returned by
 /// `agently_runtime_create`, and it must not be called twice on the same pointer.
@@ -54,9 +54,9 @@ pub unsafe extern "C" fn agently_runtime_destroy(runtime: *mut Runtime) {
 }
 
 /// 获取最后错误信息 (C FFI)
-/// 
+///
 /// # Safety
-/// 
+///
 /// This function is unsafe because it returns a raw pointer that must be freed
 /// by calling `agently_runtime_free_error`.
 #[no_mangle]
@@ -77,9 +77,9 @@ pub unsafe extern "C" fn agently_runtime_get_last_error() -> *mut c_char {
 }
 
 /// 释放错误字符串 (C FFI)
-/// 
+///
 /// # Safety
-/// 
+///
 /// This function is unsafe because it takes ownership of a raw pointer.
 /// The caller must ensure that `ptr` is a valid pointer returned by
 /// `agently_runtime_get_last_error`, and it must not be called twice on the same pointer.
@@ -92,9 +92,9 @@ pub unsafe extern "C" fn agently_runtime_free_error(ptr: *mut c_char) {
 }
 
 /// 启动运行时 (C FFI)
-/// 
+///
 /// # Safety
-/// 
+///
 /// This function is unsafe because it dereferences a raw pointer.
 /// The caller must ensure that `runtime` is a valid pointer returned by
 /// `agently_runtime_create`.
