@@ -3,9 +3,14 @@
 use crate::runtime::{Runtime, RuntimeConfig};
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
+use std::sync::{Mutex, OnceLock};
 
-/// 全局错误信息缓冲区 (C FFI)
-static mut LAST_ERROR: Option<String> = None;
+/// 全局错误信息缓冲区 (C FFI) - 线程安全
+static LAST_ERROR: OnceLock<Mutex<Option<String>>> = OnceLock::new();
+
+fn get_last_error() -> &'static Mutex<Option<String>> {
+    LAST_ERROR.get_or_init(|| Mutex::new(None))
+}
 
 /// 创建运行时 (C FFI)
 #[no_mangle]
@@ -40,11 +45,29 @@ pub extern "C" fn agently_runtime_destroy(runtime: *mut Runtime) {
 
 /// 获取最后错误信息 (C FFI)
 #[no_mangle]
-pub extern "C" fn agently_runtime_get_last_error() -> *const c_char {
-    unsafe {
-        match &LAST_ERROR {
-            Some(err) => CString::new(err.as_str()).unwrap_or_default().into_raw(),
-            None => std::ptr::null(),
+pub extern "C" fn agently_runtime_get_last_error() -> *mut c_char {
+    match get_last_error().lock() {
+        Ok(guard) => {
+            if let Some(ref err) = *guard {
+                match CString::new(err.as_str()) {
+                    Ok(cstr) => cstr.into_raw(),
+                    Err(_) => std::ptr::null_mut(),
+                }
+            } else {
+                std::ptr::null_mut()
+            }
+        }
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+/// 释放错误字符串 (C FFI)
+#[no_mangle]
+pub extern "C" fn agently_runtime_free_error(ptr: *mut c_char) {
+    if !ptr.is_null() {
+        tracing::debug!("Freeing error string");
+        unsafe {
+            let _ = CString::from_raw(ptr);
         }
     }
 }
@@ -53,8 +76,8 @@ pub extern "C" fn agently_runtime_get_last_error() -> *const c_char {
 #[no_mangle]
 pub extern "C" fn agently_runtime_start(runtime: *mut Runtime) -> i32 {
     if runtime.is_null() {
-        unsafe {
-            LAST_ERROR = Some("Null runtime pointer".to_string());
+        if let Ok(mut guard) = get_last_error().lock() {
+            *guard = Some("Null runtime pointer".to_string());
         }
         return -1;
     }
@@ -63,8 +86,8 @@ pub extern "C" fn agently_runtime_start(runtime: *mut Runtime) -> i32 {
     match runtime.start() {
         Ok(_) => 0,
         Err(e) => {
-            unsafe {
-                LAST_ERROR = Some(e.to_string());
+            if let Ok(mut guard) = get_last_error().lock() {
+                *guard = Some(e.to_string());
             }
             -1
         }
