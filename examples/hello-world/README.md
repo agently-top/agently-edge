@@ -1,30 +1,35 @@
 # Hello World Agent
 
-一个简单的示例 Agent，展示如何使用 agently Edge Runtime 创建对话助手。
+A minimal hello world agent demonstrating the basic structure of agently Edge Runtime.
 
-## 📋 功能
+## Features
 
-- ✅ 加载 YAML 配置文件
-- ✅ 初始化 LLM 引擎
-- ✅ 交互式对话
-- ✅ 多轮上下文管理
-- ✅ Mock 模式（无需真实模型即可测试）
+- YAML configuration loading
+- Interactive conversation loop
+- Multi-turn context management
+- Mock LLM response (ready for real LLM integration)
 
-## 🚀 快速开始
+## Quick Start
 
-### 1. 编译运行
+### Prerequisites
+
+- Rust 1.75+
+- (Optional) Real LLM model for production use
+
+### Build and Run
 
 ```bash
-# 进入示例目录
-cd examples/hello-world
+# Clone the repository
+cd agently-edge/examples/hello-world
 
-# 编译并运行
+# Build
+cargo build
+
+# Run
 cargo run
 ```
 
-### 2. 开始对话
-
-运行后会看到欢迎信息：
+### Example Session
 
 ```
 ╔══════════════════════════════════════════════════════════╗
@@ -39,108 +44,66 @@ How can I help you today?
 Type 'quit' or 'exit' to stop.
 
 👤 You: Hello!
-🤖 Agent: Hello! How can I help you today?
+🤖 Agent: Mock response to: Hello!
 
-👤 You: What can you do?
-🤖 Agent: I'm a simple example agent...
+👤 You: How are you?
+🤖 Agent: Mock response to: How are you?
 
 👤 You: quit
 👋 Goodbye! Thanks for using Hello World Agent.
 ```
 
-## 📁 项目结构
+## Configuration
 
-```
-hello-world/
-├── Cargo.toml          # Rust 项目配置
-├── main.rs             # 主程序入口
-├── agent.yaml          # Agent 配置文件
-└── README.md           # 本文档
-```
-
-## ⚙️ 配置说明
-
-### agent.yaml
+Edit `agent.yaml` to customize your agent:
 
 ```yaml
 agent:
-  id: hello-world           # Agent 唯一标识
-  name: Hello World Agent   # 显示名称
-  version: 0.1.0            # 版本号
-  description: "..."        # 描述
+  id: hello-world
+  name: Hello World Agent
+  version: 0.1.0
 
 runtime:
-  model_path: ./models/...  # 模型文件路径
-  context_length: 4096      # 上下文长度
-  temperature: 0.7          # 生成温度
-  max_tokens: 512           # 最大生成 token 数
-  n_threads: 4              # 推理线程数
+  context_length: 4096
+  temperature: 0.7
 
 prompts:
-  system: |                 # 系统提示词
-    You are a friendly...
-  welcome: |                # 欢迎语
-    Hello! I'm your...
+  system: You are a friendly assistant.
+  welcome: Hello! How can I help?
 ```
 
-## 🔧 自定义
+## Project Structure
 
-### 修改系统提示词
-
-编辑 `agent.yaml` 中的 `prompts.system`：
-
-```yaml
-prompts:
-  system: |
-    You are a helpful shopping assistant.
-    Help users find products and answer questions.
+```
+hello-world/
+├── Cargo.toml          # Project configuration
+├── src/
+│   ├── lib.rs          # Library (config, conversation context)
+│   └── main.rs         # Binary entry point
+├── tests/
+│   ├── config_test.rs  # Configuration loading tests
+│   └── conversation_test.rs  # Conversation tests
+├── agent.yaml          # Agent configuration
+└── README.md           # This file
 ```
 
-### 添加更多功能
-
-在 `main.rs` 中添加：
-
-```rust
-// 添加工具调用
-let tools = vec![Tool {
-    name: "get_weather".to_string(),
-    // ...
-}];
-let (response, tool_call) = engine.chat_with_tools(&messages, &tools)?;
-```
-
-## 📝 下一步
-
-- 尝试修改配置文件，创建你自己的 Agent
-- 查看其他示例：`examples/README.md`
-- 阅读完整文档：https://agently-top.github.io/agently-edge/
-
-## 🛠️ 开发
-
-### 编译
+## Testing
 
 ```bash
-cargo build --release
-```
-
-### 测试
-
-```bash
+# Run all tests
 cargo test
+
+# Run specific test
+cargo test --test config_test
+cargo test --test conversation_test
 ```
 
-### 格式化
+## Next Steps
 
-```bash
-cargo fmt
-```
+1. Integrate real LLM (llama.cpp)
+2. Add tool calling support
+3. Deploy to device
 
-### 代码检查
+## License
 
-```bash
-cargo clippy
-```
-
-## 📄 许可证
-
-Apache 2.0 - 与 agently Edge 主项目一致
+Apache 2.0
