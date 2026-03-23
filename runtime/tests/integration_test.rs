@@ -1,6 +1,6 @@
 use agently_edge::{
     agent::Agent,
-    config::{AgentConfig, ModelConfig, PromptConfig},
+    config::{AgentConfig, AgentInfo, RuntimeConfig, PromptConfig},
     message_bus::MessageBus,
     tools::{http::HttpTool, shell::ShellTool, ToolRegistry},
 };
@@ -8,7 +8,6 @@ use std::io::Write;
 use tempfile::NamedTempFile;
 
 // Helper function to create temporary config file
-// Returns both the temp file (to keep it alive) and the path
 fn write_temp_config(content: &str) -> (NamedTempFile, String) {
     let mut temp = NamedTempFile::new().unwrap();
     temp.write_all(content.as_bytes()).unwrap();
@@ -20,28 +19,26 @@ fn write_temp_config(content: &str) -> (NamedTempFile, String) {
 fn test_full_agent_workflow() {
     // 1. 创建配置文件
     let config_content = r#"
-agent_id: integration-test
-name: Integration Test Agent
-model:
-  path: /models/test.gguf
+agent:
+  id: integration-test
+  name: Integration Test Agent
+  version: 0.1.0
+  description: "Test agent"
+runtime:
+  model_path: /models/test.gguf
   context_length: 4096
   temperature: 0.7
-tools:
-  - name: http
-    type: http
-  - name: shell
-    type: shell
 prompts:
   system: "You are a helpful assistant."
-  greeting: "Hello! I'm your agent."
+  welcome: "Hello! I'm your agent."
 "#;
 
     let (temp_file, temp_path) = write_temp_config(config_content);
 
-    // 2. 加载配置 (keep temp_file alive to prevent deletion)
+    // 2. 加载配置
     let config = agently_edge::config::load_config(std::path::Path::new(&temp_path))
         .expect("Failed to load config");
-    let _ = temp_file; // Ensure temp_file stays alive
+    let _ = temp_file;
 
     // 3. 创建 Agent
     let mut agent = Agent::load(config).expect("Failed to load agent");
@@ -65,18 +62,24 @@ prompts:
 fn test_agent_with_tools() {
     // 创建 Agent 配置
     let config = AgentConfig {
-        agent_id: "tool-agent".to_string(),
-        name: "Tool Agent".to_string(),
-        model: ModelConfig {
-            path: "/models/test.gguf".to_string(),
+        agent: AgentInfo {
+            id: "tool-agent".to_string(),
+            name: "Tool Agent".to_string(),
+            version: "0.1.0".to_string(),
+            description: "Test agent with tools".to_string(),
+        },
+        runtime: RuntimeConfig {
+            model_path: "/models/test.gguf".to_string(),
             context_length: 4096,
             temperature: 0.7,
+            max_tokens: 512,
+            n_threads: 4,
         },
-        tools: vec![],
         prompts: PromptConfig {
             system: "You are a helpful assistant.".to_string(),
-            greeting: "Hello!".to_string(),
+            welcome: "Hello!".to_string(),
         },
+        logging: None,
     };
 
     let mut agent = Agent::load(config).expect("Failed to load agent");

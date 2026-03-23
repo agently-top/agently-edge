@@ -5,16 +5,18 @@ use std::io::Write;
 fn test_load_valid_config() {
     // 创建一个临时 YAML 配置文件
     let config_content = r#"
-agent_id: test-agent
-name: Test Agent
-model:
-  path: /models/test.gguf
+agent:
+  id: test-agent
+  name: Test Agent
+  version: 0.1.0
+  description: "Test agent"
+runtime:
+  model_path: /models/test.gguf
   context_length: 4096
   temperature: 0.7
-tools: []
 prompts:
   system: "You are a helpful assistant."
-  greeting: "Hello!"
+  welcome: "Hello!"
 "#;
 
     let temp_file = tempfile::NamedTempFile::new().unwrap();
@@ -28,10 +30,10 @@ prompts:
     let config = config::load_config(temp_path).expect("Failed to load config");
 
     // 验证配置
-    assert_eq!(config.agent_id, "test-agent");
-    assert_eq!(config.name, "Test Agent");
-    assert_eq!(config.model.path, "/models/test.gguf");
-    assert_eq!(config.model.context_length, 4096);
+    assert_eq!(config.agent.id, "test-agent");
+    assert_eq!(config.agent.name, "Test Agent");
+    assert_eq!(config.runtime.model_path, "/models/test.gguf");
+    assert_eq!(config.runtime.context_length, 4096);
 }
 
 #[test]

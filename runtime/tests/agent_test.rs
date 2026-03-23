@@ -1,21 +1,27 @@
 use agently_edge::agent::Agent;
-use agently_edge::config::{AgentConfig, ModelConfig, PromptConfig};
+use agently_edge::config::{AgentConfig, AgentInfo, RuntimeConfig, PromptConfig};
 
 #[test]
 fn test_agent_load() {
     let config = AgentConfig {
-        agent_id: "test-agent".to_string(),
-        name: "Test Agent".to_string(),
-        model: ModelConfig {
-            path: "/models/test.gguf".to_string(),
+        agent: AgentInfo {
+            id: "test-agent".to_string(),
+            name: "Test Agent".to_string(),
+            version: "0.1.0".to_string(),
+            description: "Test agent".to_string(),
+        },
+        runtime: RuntimeConfig {
+            model_path: "/models/test.gguf".to_string(),
             context_length: 4096,
             temperature: 0.7,
+            max_tokens: 512,
+            n_threads: 4,
         },
-        tools: vec![],
         prompts: PromptConfig {
             system: "You are a helpful assistant.".to_string(),
-            greeting: "Hello!".to_string(),
+            welcome: "Hello!".to_string(),
         },
+        logging: None,
     };
 
     let agent = Agent::load(config).expect("Failed to load agent");
@@ -52,17 +58,23 @@ fn test_agent_process_message() {
 
 fn create_test_config() -> AgentConfig {
     AgentConfig {
-        agent_id: "test-agent".to_string(),
-        name: "Test Agent".to_string(),
-        model: ModelConfig {
-            path: "/models/test.gguf".to_string(),
+        agent: AgentInfo {
+            id: "test-agent".to_string(),
+            name: "Test Agent".to_string(),
+            version: "0.1.0".to_string(),
+            description: "Test agent".to_string(),
+        },
+        runtime: RuntimeConfig {
+            model_path: "/models/test.gguf".to_string(),
             context_length: 4096,
             temperature: 0.7,
+            max_tokens: 512,
+            n_threads: 4,
         },
-        tools: vec![],
         prompts: PromptConfig {
             system: "You are a helpful assistant.".to_string(),
-            greeting: "Hello!".to_string(),
+            welcome: "Hello!".to_string(),
         },
+        logging: None,
     }
 }

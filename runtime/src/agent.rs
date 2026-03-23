@@ -30,8 +30,8 @@ impl Agent {
     /// 加载 Agent
     pub fn load(config: AgentConfig) -> Result<Self> {
         Ok(Self {
-            id: config.agent_id.clone(),
-            name: config.name.clone(),
+            id: config.agent.id.clone(),
+            name: config.agent.name.clone(),
             config,
             state: AgentState::Loading,
         })
@@ -66,9 +66,9 @@ impl Agent {
 
     /// 处理消息
     pub fn process_message(&mut self, message: &str) -> Result<AgentResponse> {
-        // MVP 阶段：简单返回 greeting
+        // MVP 阶段：简单返回 welcome
         let response = if message == "Hello!" || message.starts_with("你好") {
-            self.config.prompts.greeting.clone()
+            self.config.prompts.welcome.clone()
         } else {
             "I'm a simple agent. LLM integration coming soon.".to_string()
         };

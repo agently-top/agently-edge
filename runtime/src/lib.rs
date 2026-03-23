@@ -10,6 +10,9 @@ pub mod message_bus;
 pub mod runtime;
 pub mod tools;
 
+// 导出公共 API
+pub use config::AgentConfig;
+
 /// 库版本
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 

@@ -1,9 +1,9 @@
 [package]
 name = "agently-edge-runtime"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
 description = "Edge AI Agent Runtime for Commercial Display Devices"
-license = "Apache-2.0"
 
 [lib]
 name = "agently_edge"
