@@ -1,0 +1,17 @@
+[package]
+name = "hello-world-agent"
+version = "0.1.0"
+edition = "2021"
+description = "Hello World Agent example for agently Edge"
+license = "Apache-2.0"
+
+[[bin]]
+name = "hello-world"
+path = "main.rs"
+
+[dependencies]
+agently-edge-runtime = { path = "../../runtime" }
+anyhow = "1.0"
+tokio = { version = "1.35", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"

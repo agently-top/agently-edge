@@ -1,0 +1,82 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agently-edge"
+version = "0.1.0"
+description = "Edge AI Agent Runtime for Commercial Display Devices"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.11"
+authors = [
+    {name = "agently Team", email = "hello@agently.top"}
+]
+keywords = ["edge", "ai", "agent", "llm", "commercial-display"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "llama-cpp-python>=0.2.0",
+    "onnxruntime>=1.16.0",
+    "numpy>=1.24.0",
+    "pydantic>=2.0.0",
+    "typer>=0.9.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+]
+android = [
+    "chaquopy",
+]
+voice = [
+    "openai-whisper>=20231117",
+    "piper-tts>=1.0.0",
+]
+
+[project.scripts]
+agently = "cli.agently:app"
+
+[project.urls]
+Homepage = "https://agently.top"
+Documentation = "https://github.com/agently-top/agently-edge#readme"
+Repository = "https://github.com/agently-top/agently-edge"
+Issues = "https://github.com/agently-top/agently-edge/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["core*", "sdk*", "cli*"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311", "py312"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-v --cov=core --cov-report=term-missing"
