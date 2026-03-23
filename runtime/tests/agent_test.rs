@@ -1,5 +1,5 @@
 use agently_edge::agent::Agent;
-use agently_edge::config::{AgentConfig, AgentInfo, RuntimeConfig, PromptConfig};
+use agently_edge::config::{AgentConfig, AgentInfo, PromptConfig, RuntimeConfig};
 
 #[test]
 fn test_agent_load() {

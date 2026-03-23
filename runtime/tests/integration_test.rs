@@ -1,6 +1,6 @@
 use agently_edge::{
     agent::Agent,
-    config::{AgentConfig, AgentInfo, RuntimeConfig, PromptConfig},
+    config::{AgentConfig, AgentInfo, PromptConfig, RuntimeConfig},
     message_bus::MessageBus,
     tools::{http::HttpTool, shell::ShellTool, ToolRegistry},
 };

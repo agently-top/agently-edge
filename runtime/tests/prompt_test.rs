@@ -1,4 +1,4 @@
-use agently_edge::llm::{Message, PromptManager, Role};
+use agently_edge::llm::{PromptManager, Role};
 
 #[test]
 fn test_prompt_manager_add_message() {
