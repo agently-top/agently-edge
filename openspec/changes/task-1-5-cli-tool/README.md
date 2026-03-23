@@ -1,7 +1,7 @@
 # Task 1.5: CLI 工具 - MVP
 
 **Change ID**: task-1-5-cli-tool  
-**状态**: 🚧 In Progress  
+**状态**: ✅ Completed  
 **创建日期**: 2026-03-23  
 **优先级**: P0  
 **父任务**: Phase 1 (Rust 核心 + Linux MVP)
@@ -52,10 +52,10 @@
 
 | Phase | 进度 |
 |-------|------|
-| Phase 1: Workspace 搭建 | ⏳ Todo |
-| Phase 2: CLI 实现 | ⏳ Todo |
-| Phase 3: 文档 + 测试 | ⏳ Todo |
-| Phase 4: 提交归档 | ⏳ Todo |
+| Phase 1: Workspace 搭建 | ✅ Complete |
+| Phase 2: CLI 实现 | ✅ Complete |
+| Phase 3: 文档 + 测试 | ✅ Complete |
+| Phase 4: 提交归档 | ✅ Complete |
 
 ---
 
@@ -66,16 +66,16 @@
 - [x] 创建 specs/functional-spec.md
 - [x] 创建 design.md
 - [x] 创建 tasks.md
-- [ ] Workspace 搭建
-- [ ] CLI 实现
-- [ ] 测试验证
-- [ ] 提交推送
+- [x] Workspace 搭建
+- [x] CLI 实现
+- [x] 测试验证 (所有测试通过)
+- [x] 提交推送
 
 ### 进行中
 - 无
 
 ### 待开始
-- 所有实现任务
+- 无
 
 ---
 
@@ -94,12 +94,38 @@
 | 日期 | 事件 |
 |------|------|
 | 2026-03-23 | 创建任务，编写 artifacts |
-| TBD | 开始实现 |
-| TBD | 完成实现 |
-| TBD | 归档 |
+| 2026-03-24 | 完成实现，测试通过 |
+| 2026-03-24 | 提交并推送到 GitHub |
+
+---
+
+## 📦 交付物
+
+**代码**:
+- `cli/Cargo.toml` - CLI crate 配置
+- `cli/src/main.rs` - CLI 入口，clap 命令定义
+- `cli/README.md` - CLI 使用文档
+- `Cargo.toml` - Workspace 配置
+- `runtime/Cargo.toml` - 调整为 workspace member
+- `runtime/src/config.rs` - 配置结构更新
+- `runtime/src/lib.rs` - 导出 AgentConfig
+
+**测试结果**:
+```
+cargo test: 所有测试通过
+cargo fmt: 通过
+cargo clippy: 通过
+```
+
+**命令演示**:
+```bash
+agently run examples/hello-world/agent.yaml
+agently run --help
+```
 
 ---
 
 **提案作者**: 虾 (Xia)  
-**审核状态**: ⏳ Pending  
-**最后更新**: 2026-03-23
+**审核状态**: ✅ Approved  
+**批准日期**: 2026-03-24  
+**最后更新**: 2026-03-24
