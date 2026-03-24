@@ -343,8 +343,9 @@ impl ToolCallParser {
 
         // 尝试解析 markdown 代码块
         if let Some(start) = response.find("```json") {
-            if let Some(end) = response[start..].find("```") {
-                let json_str = &response[start + 7..start + end];
+            let json_start = start + 7;
+            if let Some(end_rel) = response[json_start..].find("```") {
+                let json_str = &response[json_start..json_start + end_rel];
                 if let Ok(value) = serde_json::from_str::<JsonValue>(json_str) {
                     if let Some(obj) = value.as_object() {
                         if let (Some(name), Some(args)) = (
