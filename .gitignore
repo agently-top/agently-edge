@@ -1,22 +1,11 @@
-# Rust
-target/
-**/*.rs.bk
-Cargo.lock
+# llama.cpp 子模块
+/vendor/llama.cpp
+runtime/vendor/
 
-# Build
-*.o
-*.so
-*.dylib
-*.dll
-*.exe
+# 编译产物
+/target/
+**/target/
 
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# Test
-*.tmp
-*.temp
+# 模型文件
+*.gguf
+/models/

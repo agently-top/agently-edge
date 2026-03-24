@@ -31,16 +31,19 @@ config = "0.14"
 uuid = { version = "1.6", features = ["v4"] }
 # CPU 核心数
 num_cpus = "1.16"
-# FFI 绑定
-bindgen = { version = "0.69", optional = true }
 
 [dev-dependencies]
 tokio-test = "0.4"
 tempfile = "3.9"
 
-[build-dependencies]
-cc = { version = "1.0", optional = true }
-
 [features]
 default = []
-full-llama = ["bindgen", "cc"]
+# 完整 llama.cpp 支持（自动下载编译）
+full-llama = []
+# CUDA 加速
+cuda = []
+# Metal 加速 (macOS)
+metal = []
+
+[build-dependencies]
+# 不需要额外的 build-dependencies，build.rs 直接使用系统命令
