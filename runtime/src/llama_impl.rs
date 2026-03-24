@@ -1,131 +1,147 @@
-//! llama.cpp FFI 绑定和推理实现
+//! llama.cpp 推理实现
 
-use anyhow::{Context, Result};
-use std::ffi::CString;
-use std::os::raw::{c_char, c_int, c_void};
+#[cfg(not(feature = "mock-only"))]
+mod full_impl {
+    use anyhow::{Context, Result};
+    use std::ffi::CString;
+    use std::os::raw::{c_char, c_int, c_void};
+    use std::path::Path;
+    use std::time::Instant;
+
+    use crate::llm::{GenerationResult, GenerateConfig, InferenceStats};
+
+    /// llama.cpp 上下文
+    pub struct LlamaContext {
+        ptr: *mut c_void,
+    }
+
+    unsafe impl Send for LlamaContext {}
+    unsafe impl Sync for LlamaContext {}
+
+    impl LlamaContext {
+        /// 从 GGUF 文件加载模型
+        pub fn load(model_path: &str, n_ctx: u32, n_threads: u32, n_gpu_layers: u32) -> Result<Self> {
+            let path_cstr = CString::new(model_path)
+                .context("Invalid model path")?;
+
+            let ptr = unsafe {
+                llama_cpp_load_model(
+                    path_cstr.as_ptr(),
+                    n_ctx as c_int,
+                    n_threads as c_int,
+                    n_gpu_layers as c_int,
+                )
+            };
+
+            if ptr.is_null() {
+                anyhow::bail!("Failed to load model: {}", model_path);
+            }
+
+            Ok(Self { ptr })
+        }
+
+        /// 生成文本
+        pub fn generate(&mut self, prompt: &str, config: &GenerateConfig) -> Result<GenerationResult> {
+            let prompt_cstr = CString::new(prompt).context("Invalid prompt")?;
+            let start = Instant::now();
+
+            let result_ptr = unsafe {
+                llama_cpp_generate(
+                    self.ptr,
+                    prompt_cstr.as_ptr(),
+                    config.max_tokens as c_int,
+                    config.temperature,
+                    config.top_p,
+                )
+            };
+
+            if result_ptr.is_null() {
+                anyhow::bail!("Generation failed");
+            }
+
+            let text = unsafe {
+                let c_str = std::ffi::CStr::from_ptr(result_ptr as *const c_char);
+                c_str.to_string_lossy().into_owned()
+            };
+
+            let duration = start.elapsed();
+            let tokens = text.len() as u32 / 4;
+            let tokens_per_second = if duration.as_secs_f64() > 0.0 {
+                tokens as f64 / duration.as_secs_f64()
+            } else {
+                0.0
+            };
+
+            unsafe {
+                llama_cpp_free_result(result_ptr);
+            }
+
+            Ok(GenerationResult {
+                text,
+                tokens_generated: tokens,
+                duration_ms: duration.as_millis() as u64,
+                tokens_per_second,
+            })
+        }
+    }
+
+    impl Drop for LlamaContext {
+        fn drop(&mut self) {
+            unsafe {
+                llama_cpp_unload_model(self.ptr);
+            }
+        }
+    }
+
+    // FFI 函数声明
+    #[link(name = "llama")]
+    extern "C" {
+        fn llama_cpp_load_model(
+            path: *const c_char,
+            n_ctx: c_int,
+            n_threads: c_int,
+            n_gpu_layers: c_int,
+        ) -> *mut c_void;
+
+        fn llama_cpp_generate(
+            ctx: *mut c_void,
+            prompt: *const c_char,
+            max_tokens: c_int,
+            temperature: f32,
+            top_p: f32,
+        ) -> *mut c_void;
+
+        fn llama_cpp_free_result(result: *mut c_void);
+
+        fn llama_cpp_unload_model(ctx: *mut c_void);
+    }
+}
+
+#[cfg(feature = "mock-only")]
+mod full_impl {
+    use anyhow::Result;
+    use crate::llm::{GenerationResult, GenerateConfig, InferenceStats};
+
+    pub struct LlamaContext;
+
+    impl LlamaContext {
+        pub fn load(_model_path: &str, _n_ctx: u32, _n_threads: u32, _n_gpu_layers: u32) -> Result<Self> {
+            anyhow::bail!("llama.cpp not available, use mock mode");
+        }
+
+        pub fn generate(&mut self, _prompt: &str, _config: &GenerateConfig) -> Result<GenerationResult> {
+            anyhow::bail!("llama.cpp not available, use mock mode");
+        }
+    }
+}
+
+use std::io::Read;
 use std::path::Path;
 use std::time::Instant;
-
+use anyhow::{Context, Result};
 use crate::llm::{GenerationResult, GenerateConfig, InferenceStats};
 
-/// llama.cpp 上下文 (opaque pointer)
-pub struct LlamaContext {
-    ptr: *mut c_void,
-}
-
-unsafe impl Send for LlamaContext {}
-unsafe impl Sync for LlamaContext {}
-
-impl LlamaContext {
-    /// 从 GGUF 文件加载模型并创建上下文
-    pub fn load(model_path: &str, n_ctx: u32, n_threads: u32, n_gpu_layers: u32) -> Result<Self> {
-        let path_cstr = CString::new(model_path)
-            .context("Invalid model path")?;
-
-        // 调用 FFI 加载模型
-        let ptr = unsafe {
-            llama_cpp_load_model(
-                path_cstr.as_ptr(),
-                n_ctx as c_int,
-                n_threads as c_int,
-                n_gpu_layers as c_int,
-            )
-        };
-
-        if ptr.is_null() {
-            anyhow::bail!("Failed to load model: {}", model_path);
-        }
-
-        Ok(Self { ptr })
-    }
-
-    /// 生成文本
-    pub fn generate(&mut self, prompt: &str, config: &GenerateConfig) -> Result<GenerationResult> {
-        let prompt_cstr = CString::new(prompt).context("Invalid prompt")?;
-        let start = Instant::now();
-
-        // 调用 FFI 生成
-        let result_ptr = unsafe {
-            llama_cpp_generate(
-                self.ptr,
-                prompt_cstr.as_ptr(),
-                config.max_tokens as c_int,
-                config.temperature,
-                config.top_p,
-            )
-        };
-
-        if result_ptr.is_null() {
-            anyhow::bail!("Generation failed");
-        }
-
-        // 解析结果
-        let text = unsafe {
-            let c_str = std::ffi::CStr::from_ptr(result_ptr as *const c_char);
-            c_str.to_string_lossy().into_owned()
-        };
-
-        let duration = start.elapsed();
-        let tokens = text.len() as u32 / 4;
-        let tokens_per_second = if duration.as_secs_f64() > 0.0 {
-            tokens as f64 / duration.as_secs_f64()
-        } else {
-            0.0
-        };
-
-        // 释放结果内存
-        unsafe {
-            llama_cpp_free_result(result_ptr);
-        }
-
-        Ok(GenerationResult {
-            text,
-            tokens_generated: tokens,
-            duration_ms: duration.as_millis() as u64,
-            tokens_per_second,
-        })
-    }
-
-    /// 卸载模型
-    pub fn unload(self) {
-        unsafe {
-            llama_cpp_unload_model(self.ptr);
-        }
-    }
-}
-
-impl Drop for LlamaContext {
-    fn drop(&mut self) {
-        unsafe {
-            llama_cpp_unload_model(self.ptr);
-        }
-    }
-}
-
-// FFI 函数声明
-#[link(name = "llama")]
-extern "C" {
-    fn llama_cpp_load_model(
-        path: *const c_char,
-        n_ctx: c_int,
-        n_threads: c_int,
-        n_gpu_layers: c_int,
-    ) -> *mut c_void;
-
-    fn llama_cpp_generate(
-        ctx: *mut c_void,
-        prompt: *const c_char,
-        max_tokens: c_int,
-        temperature: f32,
-        top_p: f32,
-    ) -> *mut c_void;
-
-    fn llama_cpp_free_result(result: *mut c_void);
-
-    fn llama_cpp_unload_model(ctx: *mut c_void);
-}
-
-/// 使用纯 Rust 实现的简单推理（不依赖 llama.cpp C 库）
+/// 简单 llama 引擎（不依赖 C 库，仅验证 GGUF）
 pub struct SimpleLlamaEngine {
     model_loaded: bool,
     stats: InferenceStats,
@@ -139,6 +155,7 @@ impl SimpleLlamaEngine {
         }
     }
 
+    /// 加载并验证 GGUF 模型
     pub fn load(&mut self, model_path: &str) -> Result<()> {
         let path = Path::new(model_path);
         if !path.exists() {
@@ -151,7 +168,7 @@ impl SimpleLlamaEngine {
         let mut magic = [0u8; 4];
         reader.read_exact(&mut magic)?;
 
-        // GGUF magic number: 0x46554747 ("GGUF" in little endian)
+        // GGUF magic number: "GGUF"
         if &magic != b"GGUF" {
             anyhow::bail!("Invalid GGUF file: {}", model_path);
         }
@@ -160,7 +177,8 @@ impl SimpleLlamaEngine {
         Ok(())
     }
 
-    pub fn generate(&mut self, prompt: &str, config: &GenerateConfig) -> Result<GenerationResult> {
+    /// 生成文本（简化版）
+    pub fn generate(&mut self, prompt: &str, _config: &GenerateConfig) -> Result<GenerationResult> {
         if !self.model_loaded {
             anyhow::bail!("Model not loaded");
         }
@@ -204,4 +222,4 @@ impl Default for SimpleLlamaEngine {
     }
 }
 
-use std::io::Read;
+pub use full_impl::LlamaContext;
