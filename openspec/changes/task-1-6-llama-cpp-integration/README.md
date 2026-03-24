@@ -1,7 +1,7 @@
 # Task 1.6: llama.cpp 完整集成
 
 **Change ID**: task-1-6-llama-cpp-integration  
-**状态**: ⏳ Pending Approval  
+**状态**: 🚧 In Progress  
 **创建日期**: 2026-03-24  
 **优先级**: P0  
 **父任务**: Phase 1 - Rust 核心 + Linux
@@ -132,9 +132,14 @@ tokio-stream = "0.1"
 | 日期 | 事件 | 状态 |
 |------|------|------|
 | 2026-03-24 | 创建提案 | 📝 Draft |
-| - | 等待批准 | ⏳ Pending |
-| - | 开始执行 | 🚧 In Progress |
-| - | 完成 | ✅ Done |
+| 2026-03-24 | 批准 | ✅ Approved |
+| 2026-03-24 | Task 1.6.1: 依赖配置 | ✅ Done |
+| 2026-03-24 | Task 1.6.2: ModelLoader (MVP) | ✅ Done |
+| 2026-03-24 | Task 1.6.3: InferenceEngine (MVP) | ✅ Done |
+| 2026-03-24 | Task 1.6.4: Tool Calling | ✅ Done |
+| - | Task 1.6.5: 流式生成 | ⏳ Pending |
+| - | Task 1.6.6: 性能监控 | ⏳ Pending |
+| - | Task 1.6.7: 测试 + 文档 | ⏳ Pending |
 
 ---
 
