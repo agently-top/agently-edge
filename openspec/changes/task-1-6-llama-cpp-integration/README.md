@@ -134,12 +134,16 @@ tokio-stream = "0.1"
 | 2026-03-24 | 创建提案 | 📝 Draft |
 | 2026-03-24 | 批准 | ✅ Approved |
 | 2026-03-24 | Task 1.6.1: 依赖配置 | ✅ Done |
-| 2026-03-24 | Task 1.6.2: ModelLoader (MVP) | ✅ Done |
-| 2026-03-24 | Task 1.6.3: InferenceEngine (MVP) | ✅ Done |
+| 2026-03-24 | Task 1.6.2: ModelLoader | ✅ Done |
+| 2026-03-24 | Task 1.6.3: InferenceEngine | ✅ Done |
 | 2026-03-24 | Task 1.6.4: Tool Calling | ✅ Done |
-| - | Task 1.6.5: 流式生成 | ⏳ Pending |
-| - | Task 1.6.6: 性能监控 | ⏳ Pending |
-| - | Task 1.6.7: 测试 + 文档 | ⏳ Pending |
+| 2026-03-24 | Task 1.6.5: 流式生成 | ⏸ Deferred |
+| 2026-03-24 | Task 1.6.6: 性能监控 | ✅ Done (基础统计) |
+| 2026-03-24 | Task 1.6.7: 测试 + 文档 | ✅ Done |
+
+**完成日期**: 2026-03-24  
+**实际用时**: ~2 小时  
+**状态**: ✅ Completed
 
 ---
 
